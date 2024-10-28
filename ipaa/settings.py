@@ -28,7 +28,7 @@ DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 
-# Application definition
+# Application definitions
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -51,13 +51,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'myapp.middleware.DisableCSRFForAPI',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    'https://ipa-e3ggajeje7gxewe2.eastus-01.azurewebsites.net',
-    'http://localhost', 
-    'http://127.0.0.1',
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'ipaa.urls'
 

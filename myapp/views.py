@@ -23,11 +23,7 @@ from django.http import HttpResponse
 from .models import Task
 from .models import UserProfile
 from datetime import datetime
-# Create your views here.
-from django.http import HttpResponse
 
-def home(request):
-    return HttpResponse("Hello, world!")
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -382,8 +378,3 @@ def calculate_datetime(date_text, time_text="12:00 PM"):
     except Exception as e:
         print(f"Error parsing date and time: {e}")
         return None
-
-
-
-
-
