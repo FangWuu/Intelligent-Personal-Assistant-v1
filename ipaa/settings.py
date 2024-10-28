@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-j4pd-&w%4i3q=q4+e&3r-a2%9(^tf@_20s5&hz74skgfccts@d'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myapp',
+    'rest_framework',
+    'django_extensions',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +51,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'https://ipa-e3ggajeje7gxewe2.eastus-01.azurewebsites.net',
+    'http://localhost', 
+    'http://127.0.0.1',
 ]
 
 ROOT_URLCONF = 'ipaa.urls'
