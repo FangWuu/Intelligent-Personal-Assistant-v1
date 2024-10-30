@@ -19,7 +19,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login, logout as django_logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-
+from django.shortcuts import get_object_or_404
 from .models import Task
 from .models import UserProfile
 from datetime import datetime
@@ -113,11 +113,15 @@ def create_task(request):
 
         return JsonResponse({"message": "Task created successfully!"}, status=201)
 
-@login_required
 def list_task(request):
     if request.method == "GET":
+        # Delete all tasks marked as complete for the current user
+        Task.objects.filter(user=request.user, is_complete=True).delete()
+
+        # Fetch the remaining tasks for the user
         tasks = Task.objects.filter(user=request.user)
 
+        # Format the task list to return
         task_list = [{
             "id": task.id,
             "task_description": task.task_description,
@@ -132,6 +136,50 @@ def list_task(request):
     return JsonResponse({"error": "Invalid request method."}, status=400)
 
 @csrf_exempt
+def mark_task_complete(request, task_id):
+    if request.method == "PUT":
+        # Retrieve the task for the logged-in user
+        task = get_object_or_404(Task, id=task_id, user=request.user)
+        task.is_complete = True
+        task.save()
+        return JsonResponse({"message": "Task marked as complete!"}, status=200)
+    
+    return JsonResponse({"error": "Invalid request method."}, status=400)
+
+@csrf_exempt
+def update_task(request, task_id):
+    if request.method == "PUT":
+        data = json.loads(request.body)
+        task_description = data.get('task_description')
+        task_date_str = data.get('task_date')
+        task_time_str = data.get('task_time')
+        
+        task = get_object_or_404(Task, id=task_id, user=request.user)
+
+        # Update the task description
+        if task_description:
+            task.task_description = task_description
+
+        # Parse and update the task date
+        if task_date_str:
+            try:
+                task.task_date = datetime.strptime(task_date_str, "%b %d, %Y").date()
+            except ValueError:
+                return JsonResponse({"error": "Invalid date format"}, status=400)
+
+        # Parse and update the task time
+        if task_time_str:
+            try:
+                task.task_time = datetime.strptime(task_time_str, "%I:%M %p").time()
+            except ValueError:
+                return JsonResponse({"error": "Invalid time format"}, status=400)
+
+        task.save()
+        return JsonResponse({"message": "Task updated successfully!"}, status=200)
+
+    return JsonResponse({"error": "Invalid request method."}, status=400)
+
+@csrf_exempt
 @login_required
 def delete_task(request, task_id):
     if request.method == "DELETE":
@@ -139,6 +187,8 @@ def delete_task(request, task_id):
             task.delete()
             return JsonResponse({"message": "Task deleted successfully!"}, status=200)
     return JsonResponse({"error": "Invalid request method."}, status=400)
+
+
 
 # Helper function to get latitudes and longitudes based on city using OpenWeather Geocoding API
 def get_lat_lon_openweather(api_key, city, state):

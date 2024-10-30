@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+from dotenv import load_dotenv
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -82,8 +83,15 @@ WSGI_APPLICATION = 'ipaa.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',  # MySQL databases in django format
+        'NAME': 'myipadatabase',                # database name
+        'USER': 'wufang@ipaserver4',           # Format: username@servername (note the server name is first word in the domain 'ipaserver4'.mysql.)
+        'PASSWORD': '15092002snbiI',            # database password
+        'HOST': 'ipaserver4.mysql.database.azure.com',  # Server host domain
+        'PORT': '3306',                         # Default MySQL port
+        'OPTIONS': {
+            'ssl': {'ssl_mode': 'REQUIRED'},   # SSL options for Azure MySQL
+        },
     }
 }
 
