@@ -2,6 +2,7 @@ import os
 import openai
 import requests
 import re
+import logging
 import calendar
 from datetime import datetime, timedelta
 from django.http import JsonResponse
@@ -24,7 +25,7 @@ from .models import Task
 from .models import UserProfile
 from datetime import datetime
 
-
+logger = logging.getLogger(__name__)
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 openweather_api_key = os.getenv('OPENWEATHER_API_KEY')
@@ -40,12 +41,25 @@ def register(request):
     email = request.data.get('email')
     password = request.data.get('password')
 
+    # Log the received data for debugging
+    logger.debug(f"Received data - Username: {username}, Email: {email}")
+
+    # Check if any required field is missing
+    if not username:
+        return Response({"error": "Username must be provided."}, status=status.HTTP_400_BAD_REQUEST)
+    if not email:
+        return Response({"error": "Email must be provided."}, status=status.HTTP_400_BAD_REQUEST)
+    if not password:
+        return Response({"error": "Password must be provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if the username or email already exists
     if User.objects.filter(username=username).exists():
         return Response({"error": "Username already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
     if User.objects.filter(email=email).exists():
         return Response({"error": "Email already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
+    # Create the user
     user = User.objects.create_user(username=username, email=email, password=password)
     user.save()
 
