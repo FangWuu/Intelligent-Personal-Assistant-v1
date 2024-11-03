@@ -34,7 +34,7 @@ def home(request):
 
 # Register View
 @csrf_exempt
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def register(request):
     username = request.data.get('username')
     email = request.data.get('email')
