@@ -173,6 +173,9 @@ def update_task(request, task_id):
         # Update the task description
         if task_description:
             task.task_description = task_description
+        else:
+            task.task_description = None
+        
 
         # Parse and update the task date
         if task_date_str:
@@ -180,6 +183,8 @@ def update_task(request, task_id):
                 task.task_date = datetime.strptime(task_date_str, "%b %d, %Y").date()
             except ValueError:
                 return JsonResponse({"error": "Invalid date format"}, status=400)
+        else:
+            task.task_date = None
 
         # Parse and update the task time
         if task_time_str:
@@ -187,6 +192,8 @@ def update_task(request, task_id):
                 task.task_time = datetime.strptime(task_time_str, "%I:%M %p").time()
             except ValueError:
                 return JsonResponse({"error": "Invalid time format"}, status=400)
+        else:
+            task.task_time = None
 
         task.save()
         return JsonResponse({"message": "Task updated successfully!"}, status=200)
